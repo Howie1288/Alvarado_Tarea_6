@@ -14,7 +14,11 @@ btnCancelar.parentElement.style.display = 'none'
 const guardar = async (evento) => {
     evento.preventDefault();
     if(!validarFormulario(formulario, ['cliente_id'])){
-        alert('Debe llenar todos los campos');
+        Swal.fire({
+            icon: 'error',
+            title: "Error",
+            text: `Por favor ingrese todos los campos`,
+        });
         return 
     }
 
@@ -47,7 +51,11 @@ const guardar = async (evento) => {
                 break;
         }
 
-        alert(mensaje);
+        Swal.fire({
+            icon: codigo === 1 ? 'success' : 'error',
+            title: codigo === 1 ? 'Éxito' : 'Error',
+            text: mensaje,
+        });
 
     } catch (error) {
         console.log(error);
@@ -92,7 +100,7 @@ const buscar = async () => {
                 buttonModificar.addEventListener('click', () => colocarDatos(cliente))
                 buttonEliminar.addEventListener('click', () => eliminar(cliente.CLIENTE_ID))
                 console.log(cliente.cliente_id);
-
+                
                 td1.innerText = contador;
                 td2.innerText = cliente.CLIENTE_NOMBRE;
                 td3.innerText = cliente.CLIENTE_NIT;
@@ -106,9 +114,9 @@ const buscar = async () => {
                 tr.appendChild(td3)
                 tr.appendChild(td4)
                 tr.appendChild(td5)
-
+                
                 fragment.appendChild(tr);
-
+                
                 contador++;
             })
         }else{
@@ -119,41 +127,12 @@ const buscar = async () => {
             tr.appendChild(td)
             fragment.appendChild(tr);
         }
-
+        
         tablaCLientes.tBodies[0].appendChild(fragment)
     } catch (error) {
         console.log(error);
     }
 }
-
-const colocarDatos = (datos) => {
-    formulario.cliente_nombre.value = datos.CLIENTE_NOMBRE
-    formulario.cliente_nit.value = datos.CLIENTE_NIT
-    formulario.cliente_id.value = datos.CLIENTE_ID
-
-    btnGuardar.disabled = true
-    btnGuardar.parentElement.style.display = 'none'
-    btnBuscar.disabled = true
-    btnBuscar.parentElement.style.display = 'none'
-    btnModificar.disabled = false
-    btnModificar.parentElement.style.display = ''
-    btnCancelar.disabled = false
-    btnCancelar.parentElement.style.display = ''
-    divTabla.style.display = 'none'
-}
-
-const cancelarAccion = () => {
-    btnGuardar.disabled = false
-    btnGuardar.parentElement.style.display = ''
-    btnBuscar.disabled = false
-    btnBuscar.parentElement.style.display = ''
-    btnModificar.disabled = true
-    btnModificar.parentElement.style.display = 'none'
-    btnCancelar.disabled = true
-    btnCancelar.parentElement.style.display = 'none'
-    divTabla.style.display = ''
-}
-
 
 
 const eliminar = async (id) => {
@@ -207,51 +186,74 @@ const eliminar = async (id) => {
             }
         }
 
-
-    const modificar = async (e) => {
-        e.preventDefault();
-        if(!validarFormulario(formulario)){
-            alert('Debe llenar todos los campos');
-            return 
-        }
-    
-        const body = new FormData(formulario)
-        body.append('tipo', 2)
-        const url = '/Alvarado_Tarea_6/controladores/clientes/index.php';
-        const config = {
-            method : 'POST',
-            body
-        }
-    
-        try {
-            const respuesta = await fetch(url, config)
-            const data = await respuesta.json();
-            
-            const {codigo, mensaje, detalle} = data;
-    
-            switch (codigo) {
-                case 1:
-                    formulario.reset();
-                    buscar();
-                    break;
-            
-                case 0:
-                    console.log(detalle)
-                    break;
-            
-                default:
-                    break;
+        const modificar = async () => {
+            const body = new FormData(formulario);
+            body.append('tipo', 2); // Tipo 2 para indicar que es una operación de modificar
+            const url = '/Alvarado_Tarea_6/controladores/clientes/index.php';
+            const config = {
+                method: 'POST',
+                body,
+            };
+        
+            try {
+                const respuesta = await fetch(url, config);
+                const data = await respuesta.json();
+        
+                const { codigo, mensaje, detalle } = data;
+        
+                switch (codigo) {
+                    case 1:
+                        formulario.reset();
+                        buscar();
+                        cancelarAccion();
+                        break;
+        
+                    case 0:
+                        console.log(detalle);
+                        break;
+        
+                    default:
+                        break;
+                }
+        
+                // alert(mensaje);
+                Swal.fire({
+                    icon: codigo === 1 ? 'success' : 'error',
+                    title: codigo === 1 ? 'Éxito' : 'Error',
+                    text: mensaje,
+                });
+            } catch (error) {
+                console.log(error);
             }
-        Swal.fire({
-                icon: codigo === 1 ? 'success' : 'error',
-                title: codigo === 1 ? 'Éxito' : 'Error',
-                text: mensaje,
-            });
+        };
+const colocarDatos = (datos) => {
+    formulario.cliente_nombre.value = datos.CLIENTE_NOMBRE
+    formulario.cliente_nit.value = datos.CLIENTE_NIT
+    formulario.cliente_id.value = datos.CLIENTE_ID
     
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    btnGuardar.disabled = true
+    btnGuardar.parentElement.style.display = 'none'
+    btnBuscar.disabled = true
+    btnBuscar.parentElement.style.display = 'none'
+    btnModificar.disabled = false
+    btnModificar.parentElement.style.display = ''
+    btnCancelar.disabled = false
+    btnCancelar.parentElement.style.display = ''
+    divTabla.style.display = 'none'
+}
+
+const cancelarAccion = () => {
+    btnGuardar.disabled = false
+    btnGuardar.parentElement.style.display = ''
+    btnBuscar.disabled = false
+    btnBuscar.parentElement.style.display = ''
+    btnModificar.disabled = true
+    btnModificar.parentElement.style.display = 'none'
+    btnCancelar.disabled = true
+    btnCancelar.parentElement.style.display = 'none'
+    divTabla.style.display = ''
+}
+
 
 
 // buscar();
