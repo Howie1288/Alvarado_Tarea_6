@@ -155,8 +155,20 @@ const cancelarAccion = () => {
 }
 
 
+
 const eliminar = async (id) => {
-    if(confirm("¿Desea eliminar este cliente?")){
+    const result = await Swal.fire({
+        icon: 'warning',
+        title: 'Eliminar producto',
+        text: '¿Desea eliminar este producto?',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar',
+    });
+
+          
         
         const url = `/Alvarado_Tarea_6/controladores/clientes/index.php?tipo=1&cliente_id=${id}`;
         const config = {
@@ -182,13 +194,18 @@ const eliminar = async (id) => {
                     break;
             }
 
-            alert(mensaje);
+            Swal.fire({
+                icon: codigo === 1 ? 'success' : 'error',
+                title: codigo === 1 ? 'Éxito' : 'Error',
+                text: mensaje,
+            });
+
+        
 
             } catch (error) {
                 console.log(error);
             }
         }
-    }
 
 
     const modificar = async (e) => {
@@ -225,8 +242,11 @@ const eliminar = async (id) => {
                 default:
                     break;
             }
-    
-            alert(mensaje);
+        Swal.fire({
+                icon: codigo === 1 ? 'success' : 'error',
+                title: codigo === 1 ? 'Éxito' : 'Error',
+                text: mensaje,
+            });
     
         } catch (error) {
             console.log(error);
@@ -234,7 +254,7 @@ const eliminar = async (id) => {
     }
 
 
-buscar();
+// buscar();
 
 formulario.addEventListener('submit', guardar )
 btnModificar.addEventListener('click', modificar)
